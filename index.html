@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unnamed Mty - Bazar Retro</title>
+    <!-- Logo en pestaña -->   
+    <link rel="icon" type="image/png" href="img/logo-dark.png">
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Importar fuentes de Google Fonts: Playfair Display para títulos, Open Sans para cuerpo -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Enlace a Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Enlace a tu archivo CSS personalizado -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Estilos para el carrusel 3D */
+        .carousel-container {
+            perspective: 1000px; /* Define la perspectiva para el efecto 3D */
+            overflow: hidden;
+            position: relative;
+            height: 250px; /* Altura fija para el carrusel */
+        }
+
+        .carousel-track {
+            display: flex;
+            width: fit-content; /* Se ajusta al contenido */
+            animation: scroll-carousel 30s linear infinite; /* Animación de desplazamiento */
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            align-items: center;
+            padding: 0 20px; /* Espacio para que los items entren y salgan */
+        }
+
+        .carousel-item {
+            width: 200px; /* Ancho de cada item */
+            height: 200px; /* Altura de cada item */
+            margin: 0 15px;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            background-color: var(--bg-secondary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-radius: 1rem; /* rounded-xl */
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .carousel-item:hover {
+            transform: scale(1.05) rotateY(10deg); /* Efecto 3D al hacer hover */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 70%;
+            object-fit: cover;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .carousel-item-info {
+            padding: 10px;
+            width: 100%;
+        }
+
+        @keyframes scroll-carousel {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(-50% - 30px)); } /* Mueve la mitad de los items + margen */
+        }
+
+        /* Duplicar el track para un loop infinito sin saltos */
+        .carousel-track::after {
+            content: attr(data-content); /* Usar atributo para duplicar contenido */
+            display: flex;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<!-- El body ahora tiene el fondo parallax -->
+<body class="theme-dark font-open-sans hero-background flex flex-col min-h-screen">
+
+    <!-- Elementos de Audio (ocultos) -->
+    <audio id="tf2-medal-sound" src="sounds/tf2_medal_sound.mp3" preload="auto"></audio>
+    <audio id="tf2-fail-sound" src="sounds/tf2_fail_sound.mp3" preload="auto"></audio>
+
+    <!-- Botón de Menú (Estrella) - Fijo en la esquina superior izquierda -->
+    <button id="menu-toggle" class="fixed top-6 left-6 z-50 p-3 text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200">
+        <!-- Usar una imagen PNG para el ícono del menú (estrella) -->
+        <img id="menu-icon-img" src="img/star-icon-dark.png" alt="Menu" class="w-10 h-10"> <!-- Aumentado a w-10 h-10 -->
+    </button>
+
+    <!-- Menú de Navegación Lateral -->
+    <nav id="main-menu-overlay" class="main-menu-overlay">
+        <!-- El botón de cerrar se elimina, la estrella ahora lo maneja -->
+        <div class="mb-12 mt-12"> <!-- Ajustado el margen superior para el contenido del menú -->
+            <a href="index.html" class="block">
+                <!-- Logo en el menú -->
+                <img id="site-logo" src="img/logo-dark.png" onerror="this.onerror=null;this.src='https://placehold.co/150x50/000000/FFFFFF?text=LOGO';" alt="Unnamed Mty Logo" class="h-16 mx-auto">
+            </a>
+        </div>
+        <ul class="text-center space-y-8">
+            <!-- Los textos del menú se mantienen como texto -->
+            <li><a href="index.html" class="text-5xl font-playfair text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200 block">Inicio</a></li>
+            <li><a href="news.html" class="text-5xl font-playfair text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200 block">Noticias</a></li>
+            <li><a href="stock.html" class="text-5xl font-playfair text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200 block">Stock</a></li>
+            <li><a href="index.html#location" class="text-5xl font-playfair text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200 block">Ubicación</a></li>
+            <!-- Botón de Admin Login (se mantiene el texto) -->
+            <li>
+                <a href="admin-login.html" class="inline-block mt-8 px-4 py-2 text-base font-open-sans text-[var(--text-primary)] bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg hover:bg-[var(--color-accent)] hover:text-[var(--bg-secondary)] transition-colors duration-200">
+                    Admin Login
+                </a>
+            </li>
+            <!-- Botón para cambiar el tema dentro del menú (solo icono) -->
+            <li class="mt-12">
+                <button id="theme-toggle-overlay" class="text-[var(--text-primary)] p-3 border border-[var(--border-color)] hover:text-[var(--color-accent)] transition-colors duration-200 text-4xl rounded-full">
+                    <i class="fas fa-moon" id="theme-icon-overlay"></i>
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Sección de Inicio (Hero Section) -->
+    <section id="home" class="h-screen flex items-center justify-center text-center relative scroll-target">
+        <!-- Capa de gradiente que va de negro (con 70% opacidad) a transparente hacia abajo -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black-70 to-black-0 animate-fade-in z-0"></div>
+        
+        <!-- Contenido principal (logo y botón) -->
+        <div class="z-20 flex flex-col items-center justify-center px-4">
+            <!-- Logo en la sección de inicio (más grande y con efecto hover) -->
+            <img id="hero-logo" src="img/logo-dark.png" onerror="this.onerror=null;this.src='https://placehold.co/300x100/000000/FFFFFF?text=Unnamed+Mty';" alt="Unnamed Mty Logo" class="w-auto h-40 md:h-56 mx-auto mb-8 animate-fade-in hover:scale-110 transition-transform duration-300 cursor-pointer">
+            
+            <!-- Botón "Explora el Stock" con efecto hover y brillo -->
+            <a href="stock.html" class="btn-explore-stock group relative inline-block bg-[var(--color-accent)] text-black w-full md:w-auto px-8 py-4 border border-[var(--border-color)] rounded-lg text-xl font-semibold shadow-lg animate-fade-in delay-100 overflow-hidden">
+                Explora el Stock
+                <!-- Elemento para el efecto de brillo -->
+                <span class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Sección de Ubicación y Horario -->
+    <section id="location" class="py-16 relative z-10 scroll-target flex items-center justify-center">
+        <!-- Capa oscura sobre el fondo parallax para mejorar la legibilidad, pero ahora más sutil o eliminada para el efecto de la imagen -->
+        <div class="absolute inset-0 bg-black opacity-40"></div> <!-- Opacidad reducida para que se vea más el fondo -->
+        <div class="container mx-auto px-4 text-center relative z-10">
+            <!-- Título "¿DÓNDE ESTAMOS?" como imagen -->
+            <h2 class="text-4xl md:text-5xl font-playfair font-bold text-center mb-12 text-[var(--text-primary)] animate-fade-in-up uppercase">
+                <img src="img/titulo-donde-estamos.png" alt="¿DÓNDE ESTAMOS?" class="mx-auto h-16 md:h-20">
+            </h2>
+            <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+                <!-- Mapa de Google Maps -->
+                <div class="w-full md:w-1/2 h-80 md:h-96 bg-[var(--bg-secondary)] shadow-xl overflow-hidden border border-[var(--border-color)] rounded-3xl animate-scale-in">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m12!1m8!1m3!1d28757.36622850358!2d-100.3520393!3d25.7153222!3m2!1i1024!2i768!4f13.1!2m1!1sRodrigo%20G%C3%B3mez%20%23335%20Col%20Central%20Monterrey%20Nuevo%20Le%C3%B3n!5e0!3m2!1ses!2smx!4v1752459437476!5m2!1ses!2smx" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                        width="100%"
+                        height="100%"
+                        style="border:0;"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        title="Ubicación de Unnamed Mty"
+                    ></iframe>
+                </div>
+                <!-- Información de Dirección y Horario -->
+                <div class="w-full md:w-1/2 bg-[var(--bg-secondary)] p-8 shadow-xl border border-[var(--border-color)] rounded-3xl animate-slide-in-right text-left">
+                    <p class="text-xl md:text-2xl font-playfair font-semibold mb-4 text-[var(--text-primary)]">
+                        📍 Rodrigo Gómez #335 Col Central, Monterrey Nuevo León
+                    </p>
+                    <p class="text-xl md:text-2xl font-playfair font-semibold text-[var(--text-primary)]">
+                        🕖 Horario: 12:30 PM - 6:30 PM (Lunes a Viernes)
+                    </p>
+                    <div class="mt-6 flex justify-start"> <!-- Cambiado a justify-start para alinear a la izquierda -->
+                        <a href="https://www.instagram.com/unnamed.mty/" target="_blank" class="text-[var(--instagram-color)] hover:text-[var(--color-accent)] transition-colors text-4xl">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (Pie de página) -->
+    <footer class="bg-transparent text-[var(--text-primary)] py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-base font-open-sans mb-1">Unnamed Mty</p>
+            <p class="text-sm font-open-sans mb-1">Rodrigo Gómez #335 Col Central, Monterrey Nuevo León</p>
+            <p class="text-sm font-open-sans mb-1">Horario: Lunes a Viernes: 12:30 PM - 6:30 PM</p>
+            <p class="text-xs font-open-sans mt-4">© 2025 Unnamed Mty. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDKs (Solo si index.html necesita Firebase directamente, que ahora no es el caso para stock) -->
+    <!-- Mantengo la estructura para futuros usos si se decide cargar el carrusel de Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // TU OBJETO firebaseConfig REAL COPIADO DE LA CONSOLA DE FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSySwbwtRFERBmg1jMOL3pll1ZY0z2N1WTwxk", // REEMPLAZA ESTO CON TU API KEY REAL
+            authDomain: "unnamedweblogin.firebaseapp.com", // REEMPLAZA ESTO CON TU AUTH DOMAIN REAL
+            projectId: "unnamedweblogin", // REEMPLAZA ESTO CON TU PROJECT ID REAL
+            storageBucket: "unnamedweblogin.appspot.com",
+            messagingSenderId: "13792996670",
+            appId: "1:13792996670:web:2eb519a5daf0bf919fbe01",
+            measurementId: "G-ZRMH689J7H"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Obtener el appId (projectId) directamente de la configuración de Firebase
+        const appId = firebaseConfig.projectId;
+
+        // Si el carrusel fuera a cargar de Firebase, se usaría esta referencia:
+        // const stockCollectionRef = collection(db, `artifacts/${appId}/public/data/stockItems`);
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Lógica para el carrusel 3D
+            const carouselTrack = document.getElementById('featured-carousel-track');
+            if (carouselTrack) {
+                // Duplicar el contenido del carrusel para el efecto de loop infinito
+                const carouselContent = carouselTrack.innerHTML;
+                carouselTrack.setAttribute('data-content', carouselContent); // Guarda el contenido original
+                carouselTrack.innerHTML += carouselContent; // Duplica el contenido
+            }
+        });
+    </script>
+    <!-- Enlace a tu archivo JavaScript personalizado (para el menú y tema) -->
+    <script src="js/script.js"></script>
+</body>
+</html>
