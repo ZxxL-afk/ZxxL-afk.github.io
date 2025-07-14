@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock - Unnamed Mty</title>
+       <link rel="icon" type="image/png" href="img/logo-dark.png">
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Importar fuentes de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Enlace a Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Enlace a tu archivo CSS personalizado -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Estilos específicos para stock.html */
+        body {
+            min-height: 100vh;
+            background-color: var(--bg-primary); /* Fondo principal del tema */
+        }
+        .stock-container-wrapper {
+            background-color: rgba(var(--bg-primary-rgb), 0.7); /* Semi-transparent */
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border-radius: 1.5rem; /* rounded-3xl */
+            padding: 2rem;
+        }
+        .product-card-brand {
+            background-color: rgba(var(--bg-secondary-rgb), 0.8); /* Semi-transparent */
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s ease-in-out;
+            position: relative; /* Needed for carousel buttons */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Distribute space */
+        }
+        .product-card-brand:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+        }
+        .product-card-image-wrapper {
+            width: 100%;
+            height: 200px; /* Fixed height for consistency */
+            overflow: hidden;
+            position: relative;
+            background-color: var(--bg-primary); /* Brand-adapted background for product images */
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-card-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Ensure image fits without cropping */
+            transition: opacity 0.5s ease-in-out;
+        }
+        .product-card-image-wrapper .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 1.2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.3s ease-in-out;
+        }
+        .product-card-brand:hover .carousel-button {
+            opacity: 1; /* Show on hover */
+        }
+        .product-card-image-wrapper .carousel-button.prev {
+            left: 0.5rem;
+        }
+        .product-card-image-wrapper .carousel-button.next {
+            right: 0.5rem;
+        }
+        .product-card-brand-info {
+            padding: 1rem;
+            color: var(--text-primary);
+            text-align: left;
+            position: relative;
+            flex-grow: 1; /* Allow info section to grow */
+        }
+        .product-card-brand-info .heart-icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: var(--text-primary); /* Adapt heart color to theme */
+            opacity: 0.7;
+            cursor: pointer;
+            font-size: 1.25rem;
+        }
+        .product-card-brand-info .heart-icon.active {
+            color: #e00; /* Red for active heart, can be a specific variable if needed */
+            opacity: 1;
+        }
+        .product-detail-brand {
+            background-color: rgba(var(--bg-secondary-rgb), 0.8); /* Semi-transparent */
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            color: var(--text-primary);
+        }
+        /* CAMBIO: Fondo de la imagen en detalle a negro */
+        .product-detail-brand .product-image-carousel-container {
+            position: relative;
+            width: 100%;
+            height: 500px; /* Fixed height for detail image */
+            overflow: hidden;
+            background-color: #000000; /* Fondo negro */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+        }
+        .product-detail-brand .product-image-carousel-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .product-detail-brand .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+        .product-detail-brand .carousel-button:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .product-detail-brand .carousel-button.prev {
+            left: 1rem;
+        }
+        .product-detail-brand .carousel-button.next {
+            right: 1rem;
+        }
+
+        .size-selector select { /* Mantener para consistencia si se decide reintroducir */
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--input-text);
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s;
+        }
+        .buy-instagram-button {
+            background-color: #E1306C; /* Instagram pink */
+            color: #fff;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .buy-instagram-button:hover {
+            background-color: #C13584; /* Darker Instagram pink on hover */
+        }
+        .accordion-item {
+            border-bottom: 1px solid var(--border-color);
+        }
+        .accordion-header {
+            cursor: pointer;
+            padding: 1rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            color: var(--text-primary); /* Ensure header text adapts */
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-content.active {
+            max-height: 200px; /* Adjust as needed */
+            padding-bottom: 1rem;
+        }
+
+        /* Estilos para el filtro de marcas */
+        .filter-button {
+            @apply px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        .filter-button:hover {
+            background-color: var(--color-accent);
+            color: var(--bg-secondary);
+        }
+        .filter-button.active {
+            background-color: var(--color-accent);
+            color: var(--bg-secondary);
+            border-color: var(--color-accent);
+        }
+    </style>
+</head>
+<body class="theme-dark font-open-sans flex flex-col min-h-screen hero-background">
+
+    <!-- Botón de Menú (Estrella) - Fijo en la esquina superior izquierda -->
+    <button id="menu-toggle" class="fixed top-6 left-6 z-50 p-3 text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200">
+        <img id="menu-icon-img" src="img/star-icon-dark.png" alt="Menu" class="w-12 h-12"> <!-- Aumentado a w-12 h-12 -->
+    </button>
+
+    <!-- Menú de Navegación Lateral -->
+    <nav id="main-menu-overlay" class="main-menu-overlay">
+        <div class="mb-12 mt-12">
+            <a href="index.html" class="block">
+                <img id="site-logo" src="img/logo-dark.png" onerror="this.onerror=null;this.src='https://placehold.co/150x50/000000/FFFFFF?text=LOGO';" alt="Unnamed Mty Logo" class="h-16 mx-auto">
+            </a>
+        </div>
+        <ul class="text-center space-y-8">
+            <li><a href="index.html" class="text-5xl font-playfair text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200 block">Inicio</a></li>
+            <li><a href="news.html" class="text-5xl font-playfair text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200 block">Noticias</a></li>
+            <li><a href="stock.html" class="text-5xl font-playfair text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200 block">Stock</a></li>
+            <li><a href="index.html#location" class="text-5xl font-playfair text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200 block">Ubicación</a></li>
+            <li>
+                <a href="admin-login.html" class="inline-block mt-8 px-4 py-2 text-base font-open-sans text-[var(--text-primary)] bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg hover:bg-[var(--color-accent)] hover:text-[var(--bg-secondary)] transition-colors duration-200">
+                    Admin Login
+                </a>
+            </li>
+            <li class="mt-12">
+                <button id="theme-toggle-overlay" class="text-[var(--text-primary)] p-3 border border-[var(--border-color)] hover:text-[var(--color-accent)] transition-colors duration-200 text-4xl rounded-full">
+                    <i class="fas fa-moon" id="theme-icon-overlay"></i>
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Brand-like Header -->
+    <header class="brand-header w-full z-40">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between">
+            <div class="flex items-center w-full md:w-auto justify-center md:justify-start mb-4 md:mb-0">
+                <!-- Unnamed Mty text and logo -->
+                <span class="text-2xl font-bold text-[var(--text-primary)] mr-2">Unnamed Mty Stock</span>
+                <img src="img/logo-dark.png" onerror="this.onerror=null;this.src='https://placehold.co/50x50/000000/FFFFFF?text=LOGO';" alt="Unnamed Mty Logo" class="h-8 w-auto">
+            </div>
+            <div class="relative w-full md:w-auto max-w-md mx-auto md:mx-0">
+                <input type="text" placeholder="Buscar por marca, color, etc." class="w-full p-2 pl-10 rounded-md bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--text-primary)] opacity-70"></i>
+            </div>
+            <nav class="hidden md:flex space-x-6 text-sm">
+                <a href="news.html" class="text-[var(--text-primary)] hover:text-[var(--color-accent)]">Noticias</a>
+                <a href="https://www.instagram.com/unnamed.mty/" target="_blank" class="text-[var(--text-primary)] hover:text-[var(--color-accent)]"><i class="fab fa-instagram"></i></a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Brand-like Navigation Bar (Categories) -->
+    <nav class="brand-nav-bar w-full z-30">
+        <div class="container mx-auto px-4 flex justify-between md:justify-center overflow-x-auto whitespace-nowrap scrollbar-hide">
+            <a href="stock.html?category=tenis" class="px-3 py-2 text-[var(--text-primary)] hover:text-[var(--color-accent)] text-sm font-semibold">Tenis</a>
+            <a href="stock.html?category=camisas" class="px-3 py-2 text-[var(--text-primary)] hover:text-[var(--color-accent)] text-sm font-semibold">Camisas</a>
+            <a href="stock.html?category=hoodies" class="px-3 py-2 text-[var(--text-primary)] hover:text-[var(--color-accent)] text-sm font-semibold">Hoodies</a>
+            <a href="stock.html?category=accesorios" class="px-3 py-2 text-[var(--text-primary)] hover:text-[var(--color-accent)] text-sm font-semibold">Accesorios</a>
+            <a href="stock.html?category=gorras" class="px-3 py-2 text-[var(--text-primary)] hover:text-[var(--color-accent)] text-sm font-semibold">Gorras</a>
+            <a href="stock.html?category=pantalones" class="px-3 py-2 text-[var(--text-primary)] hover:text-[var(--color-accent)] text-sm font-semibold">Pantalones</a>
+            <a href="stock.html?category=chamarras" class="px-3 py-2 text-[var(--text-primary)] hover:text-[var(--color-accent)] text-sm font-semibold">Chamarras</a>
+        </div>
+    </nav>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <!-- Sección de Filtros -->
+        <div class="bg-[var(--bg-secondary)] p-6 rounded-lg shadow-xl border border-[var(--border-color)] mb-8">
+            <h2 class="text-xl font-bold mb-4 text-[var(--text-primary)]">Filtros</h2>
+            <div class="flex flex-wrap gap-3" id="brand-filters-container">
+                <!-- Los botones de marca se cargarán aquí dinámicamente -->
+                <button class="filter-button active" data-brand="all">Todas las Marcas</button>
+            </div>
+        </div>
+
+        <!-- Contenedor principal de productos, adaptado a los colores del tema -->
+        <div id="stock-content-area" class="bg-[var(--bg-secondary)] p-8 rounded-lg shadow-xl border border-[var(--border-color)]">
+            <!-- Content will be loaded here dynamically by JavaScript -->
+            <p class="text-center text-[var(--text-primary)] text-lg">Cargando productos...</p>
+        </div>
+
+        <!-- Botón para volver al catálogo (visible solo en vista de detalle) -->
+        <div id="back-to-catalog-btn-container" class="mt-12 text-center hidden">
+            <button id="back-to-catalog-btn" class="bg-[var(--bg-secondary)] text-[var(--text-primary)] px-6 py-3 rounded-lg text-lg font-semibold hover:bg-[var(--color-accent)] hover:text-[var(--bg-secondary)] transition-colors">
+                &larr; Volver al Catálogo
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer (Pie de página) -->
+    <footer class="bg-transparent text-[var(--text-primary)] py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-base font-open-sans mb-1">Unnamed Mty</p>
+            <p class="text-sm font-open-sans mb-1">Rodrigo Gómez #335 Col Central, Monterrey Nuevo León</p>
+            <p class="text-sm font-open-sans mb-1">Horario: Lunes a Viernes: 12:30 PM - 6:30 PM</p>
+            <p class="text-xs font-open-sans mt-4">© 2025 Unnamed Mty. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, query, orderBy, doc, getDoc, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // TU OBJETO firebaseConfig REAL COPIADO DE LA CONSOLA DE FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyBowtRFcrBMgljMOL3gll1Zy0z2N1W1wxk",
+            authDomain: "unnamedweblogin.firebaseapp.com",
+            projectId: "unnamedweblogin",
+            storageBucket: "unnamedweblogin.firebasestorage.app",
+            messagingSenderId: "13792998676",
+            appId: "1:13792998676:web:2bb519a5daf9bf919fbe01",
+            measurementId: "G-2RWH689J7H"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const appId = firebaseConfig.projectId;
+        const stockCollectionRef = collection(db, `artifacts/${appId}/public/data/stockItems`);
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const stockContentArea = document.getElementById('stock-content-area');
+            const backToCatalogBtnContainer = document.getElementById('back-to-catalog-btn-container');
+            const backToCatalogBtn = document.getElementById('back-to-catalog-btn');
+            const brandFiltersContainer = document.getElementById('brand-filters-container');
+
+            let currentBrandFilter = 'all'; // Variable to store the selected brand
+
+            // Anonymous authentication to allow stock reading
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) {
+                    try {
+                        await signInAnonymously(auth);
+                        console.log("Anonymous authentication successful for public user in stock.html.");
+                    } catch (error) {
+                        console.error("Error authenticating anonymously in stock.html:", error);
+                        stockContentArea.innerHTML = '<p class="col-span-full text-center text-red-500">Error loading products (authentication issue).</p>';
+                        return;
+                    }
+                }
+                // Once authenticated (or if already authenticated), load content
+                checkUrlForProductId();
+                loadBrandFilters(); // Load brand filters
+            });
+
+            // Function to check for product ID or category in the URL
+            function checkUrlForProductId() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const productId = urlParams.get('id');
+                const category = urlParams.get('category');
+                const brand = urlParams.get('brand'); // Get brand from URL
+
+                if (brand) {
+                    currentBrandFilter = brand; // Set initial brand filter
+                }
+
+                if (productId) {
+                    displayProductDetail(productId);
+                } else {
+                    displayAllProducts(category, currentBrandFilter); // Pass category and brand
+                }
+            }
+
+            // Function to dynamically load brand filters
+            async function loadBrandFilters() {
+                const brands = new Set();
+                brands.add('all'); // Always add "All Brands"
+
+                try {
+                    const querySnapshot = await getDocs(stockCollectionRef);
+                    querySnapshot.forEach((doc) => {
+                        const product = doc.data();
+                        if (product.brand && typeof product.brand === 'string') {
+                            brands.add(product.brand.trim());
+                        }
+                    });
+
+                    brandFiltersContainer.innerHTML = ''; // Clear existing filters
+                    brands.forEach(brand => {
+                        const button = document.createElement('button');
+                        button.classList.add('filter-button');
+                        if (brand === currentBrandFilter) {
+                            button.classList.add('active');
+                        }
+                        button.dataset.brand = brand;
+                        button.textContent = brand === 'all' ? 'Todas las Marcas' : brand;
+                        brandFiltersContainer.appendChild(button);
+
+                        button.addEventListener('click', () => {
+                            currentBrandFilter = brand;
+                            // Update URL without full page reload if possible
+                            const newUrl = new URL(window.location.href);
+                            if (brand === 'all') {
+                                newUrl.searchParams.delete('brand');
+                            } else {
+                                newUrl.searchParams.set('brand', brand);
+                            }
+                            newUrl.searchParams.delete('id'); // Ensure product ID is removed if present
+                            history.pushState({}, '', newUrl); // Change URL without reloading
+                            
+                            // Update active classes for filter buttons
+                            document.querySelectorAll('.filter-button').forEach(btn => {
+                                btn.classList.remove('active');
+                            });
+                            button.classList.add('active');
+
+                            displayAllProducts(null, currentBrandFilter); // Reload products with new filter
+                        });
+                    });
+
+                } catch (error) {
+                    console.error("Error loading brand filters:", error);
+                    // Show error message if filters cannot be loaded
+                    brandFiltersContainer.innerHTML = '<p class="text-red-500">Error loading filters.</p>';
+                }
+            }
+
+
+            // Function to display all products (State 1)
+            function displayAllProducts(category = null, brandFilter = 'all') {
+                stockContentArea.innerHTML = `
+                    <h2 class="text-xl font-bold mb-4 text-[var(--text-primary)]">Productos Disponibles</h2>
+                    <div id="all-products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8"></div>
+                `;
+                const allProductsGrid = document.getElementById('all-products-grid');
+                backToCatalogBtnContainer.classList.add('hidden'); // Hide back button
+
+                let q = query(stockCollectionRef, orderBy('createdAt', 'desc'));
+
+                // Apply category filter if exists
+                if (category) {
+                    q = query(q, where('type', '==', category));
+                    console.log(`Category filter applied: ${category}`); // DEBUG
+                }
+                // Apply brand filter if not 'all'
+                if (brandFilter !== 'all') {
+                    q = query(q, where('brand', '==', brandFilter));
+                    console.log(`Brand filter applied: ${brandFilter}`); // DEBUG
+                }
+
+                onSnapshot(q, (snapshot) => {
+                    console.log("Stock snapshot received in stock.html:", snapshot.size, "documents.");
+                    allProductsGrid.innerHTML = ''; // Clear container
+                    if (snapshot.empty) {
+                        allProductsGrid.innerHTML = '<p class="col-span-full text-center text-[var(--text-primary)] text-lg">¡Pronto tendremos nuevas prendas exclusivas en esta categoría!</p>';
+                        return;
+                    }
+
+                    snapshot.forEach((doc) => {
+                        const product = doc.data();
+                        const productId = doc.id;
+                        // Ensure imageUrls is an array, even if it's a single URL
+                        const imageUrls = Array.isArray(product.imageUrl) ? product.imageUrl : (product.imageUrl ? [product.imageUrl] : []);
+                        console.log(`Loading product: ${product.name}, Image URLs:`, imageUrls); // DEBUG: See image URLs
+
+                        const productCard = `
+                            <a href="stock.html?id=${productId}" class="product-card-brand block">
+                                <div class="product-card-image-wrapper" data-product-id="${productId}">
+                                    ${imageUrls.map((url, index) => `<img src="${url}" onerror="this.onerror=null;this.src='https://placehold.co/400x400/333333/E0E0E0?text=Producto';" alt="${product.name}" class="${index === 0 ? '' : 'hidden'}">`).join('')}
+                                    ${imageUrls.length > 1 ? `
+                                        <button class="carousel-button prev" data-direction="-1"><i class="fas fa-chevron-left"></i></button>
+                                        <button class="carousel-button next" data-direction="1"><i class="fas fa-chevron-right"></i></button>
+                                    ` : ''}
+                                </div>
+                                <div class="product-card-brand-info">
+                                    <i class="far fa-heart heart-icon"></i>
+                                    <p class="text-xs text-[var(--text-primary)] opacity-80 mb-1">${product.brand || 'Unnamed Mty'}</p>
+                                    <h3 class="text-sm font-semibold mb-1">${product.name}</h3>
+                                    <p class="text-lg font-bold text-[var(--color-accent)]">$${product.price ? product.price.toFixed(2) : '0.00'} MXN</p>
+                                    <p class="text-xs text-[var(--text-primary)] opacity-80 mt-1">Talla: ${product.size || 'N/A'}</p> <!-- Display size -->
+                                </div>
+                            </a>
+                        `;
+                        allProductsGrid.innerHTML += productCard;
+                    });
+                    setupCarousels(); // Initialize carousels after products are loaded
+                }, (error) => {
+                    console.error("Error getting real-time stock:", error);
+                    allProductsGrid.innerHTML = '<p class="col-span-full text-center text-red-500">Error loading stock.</p>';
+                });
+            }
+
+            // Function to initialize carousels
+            function setupCarousels() {
+                document.querySelectorAll('.product-card-image-wrapper').forEach(wrapper => {
+                    const images = Array.from(wrapper.querySelectorAll('img'));
+                    const prevButton = wrapper.querySelector('.carousel-button.prev');
+                    const nextButton = wrapper.querySelector('.carousel-button.next');
+                    let currentIndex = 0;
+
+                    function showImage(index) {
+                        images.forEach((img, i) => {
+                            img.classList.add('hidden');
+                            if (i === index) {
+                                img.classList.remove('hidden');
+                            }
+                        });
+                    }
+
+                    if (images.length > 1) {
+                        if (prevButton) {
+                            prevButton.addEventListener('click', (e) => {
+                                e.preventDefault(); // Prevent navigating to product detail
+                                e.stopPropagation(); // Stop propagation to prevent card click
+                                currentIndex = (currentIndex - 1 + images.length) % images.length;
+                                showImage(currentIndex);
+                            });
+                        }
+                        if (nextButton) {
+                            nextButton.addEventListener('click', (e) => {
+                                e.preventDefault(); // Prevent navigating to product detail
+                                e.stopPropagation(); // Stop propagation to prevent card click
+                                currentIndex = (currentIndex + 1) % images.length;
+                                showImage(currentIndex);
+                            });
+                        }
+                    }
+                });
+            }
+
+            // Function to display product detail (State 2)
+            async function displayProductDetail(productId) {
+                stockContentArea.innerHTML = '<p class="text-center text-[var(--text-primary)] text-lg">Cargando detalle del producto...</p>';
+                backToCatalogBtnContainer.classList.remove('hidden'); // Show back button
+
+                try {
+                    const docRef = doc(db, `artifacts/${appId}/public/data/stockItems`, productId);
+                    const docSnap = await getDoc(docRef);
+
+                    if (docSnap.exists()) {
+                        const product = docSnap.data();
+                        const formattedPrice = product.price ? product.price.toFixed(2) : '0.00';
+                        // Ensure imageUrls is an array
+                        const imageUrls = Array.isArray(product.imageUrl) ? product.imageUrl : (product.imageUrl ? [product.imageUrl] : []);
+                        // Get the first Instagram link if it's an array, or the string directly
+                        const instagramLink = Array.isArray(product.instagramLink) ? product.instagramLink[0] : product.instagramLink;
+
+                        console.log(`Loading detail for product: ${product.name}, Image URLs:`, imageUrls); // DEBUG: See image URLs
+
+                        stockContentArea.innerHTML = `
+                            <div class="product-detail-brand grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+                                <div class="product-image-carousel-container">
+                                    ${imageUrls.map((url, index) => `<img src="${url}" onerror="this.onerror=null;this.src='https://placehold.co/600x600/333333/E0E0E0?text=Producto+Detalle';" alt="${product.name}" class="${index === 0 ? '' : 'hidden'}" data-img-index="${index}">`).join('')}
+                                    ${imageUrls.length > 1 ? `
+                                        <button class="carousel-button prev" id="detail-prev-btn"><i class="fas fa-chevron-left"></i></button>
+                                        <button class="carousel-button next" id="detail-next-btn"><i class="fas fa-chevron-right"></i></button>
+                                    ` : ''}
+                                </div>
+                                <div class="flex flex-col">
+                                    <p class="text-[var(--text-primary)] opacity-80 text-sm mb-1">Inicio / ${product.type || 'Producto'} / ${product.brand || 'Unnamed Mty'}</p>
+                                    <h1 class="text-3xl font-bold mb-2 text-[var(--text-primary)]">${product.name}</h1>
+                                    <p class="text-[var(--text-primary)] opacity-80 text-sm mb-4">SKU: ${product.sku || 'N/A'}</p>
+                                    <p class="text-[var(--text-primary)] opacity-80 text-sm mb-4">Talla: ${product.size || 'N/A'}</p> <!-- Display size -->
+
+                                    <div class="bg-[var(--bg-primary)] p-4 rounded-md mb-4 flex items-center justify-between">
+                                        <div>
+                                            <p class="text-[var(--text-primary)] opacity-80 text-sm">Precio</p>
+                                            <p class="text-2xl font-bold text-[var(--color-accent)]">$${formattedPrice} MXN</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="buy-bid-buttons grid grid-cols-1 gap-4 mb-6">
+                                        <a href="${instagramLink || 'https://www.instagram.com/unnamed.mty/'}" target="_blank" class="buy-instagram-button text-center flex items-center justify-center">
+                                            <i class="fab fa-instagram mr-2"></i> Ordenar en Instagram
+                                        </a>
+                                    </div>
+
+                                    <!-- Accordion Sections -->
+                                    <div class="accordion-section">
+                                        <div class="accordion-item">
+                                            <div class="accordion-header" data-target="details">
+                                                <span>Detalles del Producto</span>
+                                                <i class="fas fa-chevron-down"></i>
+                                            </div>
+                                            <div id="details" class="accordion-content">
+                                                <p class="text-sm text-[var(--text-primary)] opacity-80 py-2">${product.description || 'Aquí irán los detalles específicos del producto, como materiales, características y cualquier otra información relevante.'}</p>
+                                            </div>
+                                        </div>
+                                        <div class="accordion-item">
+                                            <div class="accordion-header" data-target="authenticity">
+                                                <span>Autenticidad Garantizada</span>
+                                                <i class="fas fa-chevron-down"></i>
+                                            </div>
+                                            <div id="authenticity" class="accordion-content">
+                                                <p class="text-sm text-[var(--text-primary)] opacity-80 py-2">Todas nuestras prendas son cuidadosamente seleccionadas y verificadas para asegurar su autenticidad y calidad.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3 class="text-2xl font-bold text-[var(--text-primary)] text-center mt-12 mb-6">Productos Similares</h3>
+                            <div id="similar-products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                <p class="col-span-full text-center text-[var(--text-primary)]">Cargando productos similares...</p>
+                            </div>
+                        `;
+                        loadSimilarProducts(product.type, productId); // Load similar products
+                        setupAccordions(); // Setup accordion functionality
+                        setupDetailCarousel(); // Setup carousel for detail view
+                    } else {
+                        stockContentArea.innerHTML = '<p class="text-center text-red-500 text-lg">Producto no encontrado.</p>';
+                    }
+                } catch (error) {
+                    console.error("Error getting product detail:", error);
+                    stockContentArea.innerHTML = '<p class="col-span-full text-center text-red-500">Error loading product detail.</p>';
+                }
+            }
+
+            // Function to initialize the carousel in detail view
+            function setupDetailCarousel() {
+                const images = Array.from(document.querySelectorAll('.product-image-carousel-container img'));
+                const prevButton = document.getElementById('detail-prev-btn');
+                const nextButton = document.getElementById('detail-next-btn');
+                let currentIndex = 0;
+
+                function showDetailImage(index) {
+                    images.forEach((img, i) => {
+                        img.classList.add('hidden');
+                        if (i === index) {
+                            img.classList.remove('hidden');
+                        }
+                    });
+                }
+
+                if (images.length > 1) {
+                    if (prevButton) {
+                        prevButton.addEventListener('click', (e) => {
+                            currentIndex = (currentIndex - 1 + images.length) % images.length;
+                            showDetailImage(currentIndex);
+                        });
+                    }
+                    if (nextButton) {
+                        nextButton.addEventListener('click', (e) => {
+                            currentIndex = (currentIndex + 1) % images.length;
+                            showDetailImage(currentIndex);
+                        });
+                    }
+                }
+            }
+
+            // Function to load similar products
+            function loadSimilarProducts(productType, currentProductId) {
+                const similarProductsGrid = document.getElementById('similar-products-grid');
+                if (!similarProductsGrid) return; // Exit if element not found
+                similarProductsGrid.innerHTML = ''; // Clear container
+
+                const q = query(
+                    stockCollectionRef,
+                    where('type', '==', productType),
+                    orderBy('createdAt', 'desc')
+                );
+
+                onSnapshot(q, (snapshot) => {
+                    let hasSimilar = false;
+                    snapshot.forEach((doc) => {
+                        if (doc.id !== currentProductId) { // Do not show the current product
+                            const product = doc.data();
+                            const imageUrls = Array.isArray(product.imageUrl) ? product.imageUrl : (product.imageUrl ? [product.imageUrl] : []); // Ensure it's an array
+
+                            const productCard = `
+                                <a href="stock.html?id=${doc.id}" class="product-card-brand block">
+                                    <div class="product-card-image-wrapper" data-product-id="${doc.id}">
+                                        ${imageUrls.map((url, index) => `<img src="${url}" onerror="this.onerror=null;this.src='https://placehold.co/300x300/666666/E0E0E0?text=Similar';" alt="${product.name}" class="${index === 0 ? '' : 'hidden'}">`).join('')}
+                                        ${imageUrls.length > 1 ? `
+                                            <button class="carousel-button prev" data-direction="-1"><i class="fas fa-chevron-left"></i></button>
+                                            <button class="carousel-button next" data-direction="1"><i class="fas fa-chevron-right"></i></button>
+                                        ` : ''}
+                                    </div>
+                                    <div class="product-card-brand-info">
+                                        <i class="far fa-heart heart-icon"></i>
+                                        <p class="text-xs text-[var(--text-primary)] opacity-80 mb-1">${product.brand || 'Unnamed Mty'}</p>
+                                        <h4 class="text-sm font-semibold mb-1">${product.name}</h4>
+                                        <p class="text-lg font-bold text-[var(--color-accent)]">$${product.price ? product.price.toFixed(2) : '0.00'} MXN</p>
+                                        <p class="text-xs text-[var(--text-primary)] opacity-80 mt-1">Talla: ${product.size || 'N/A'}</p> <!-- Display size -->
+                                    </div>
+                                </a>
+                            `;
+                            similarProductsGrid.innerHTML += productCard;
+                            hasSimilar = true;
+                        }
+                    });
+
+                    if (!hasSimilar) {
+                        similarProductsGrid.innerHTML = '<p class="col-span-full text-center text-[var(--text-primary)]">No se encontraron productos similares.</p>';
+                    } else {
+                        setupCarousels(); // Initialize carousels for similar products
+                    }
+                }, (error) => {
+                    console.error("Error getting similar products:", error);
+                    similarProductsGrid.innerHTML = '<p class="col-span-full text-center text-red-500">Error loading similar products.</p>';
+                });
+            }
+
+            // Function to set up accordion functionality for product details
+            function setupAccordions() {
+                document.querySelectorAll('.accordion-header').forEach(header => {
+                    header.addEventListener('click', () => {
+                        const content = document.getElementById(header.dataset.target);
+                        if (content.classList.contains('active')) {
+                            content.classList.remove('active');
+                            header.querySelector('i').classList.remove('fa-chevron-up');
+                            header.querySelector('i').classList.add('fa-chevron-down');
+                        } else {
+                            // Close all other open accordions
+                            document.querySelectorAll('.accordion-content.active').forEach(openContent => {
+                                openContent.classList.remove('active');
+                                openContent.previousElementSibling.querySelector('i').classList.remove('fa-chevron-up');
+                                openContent.previousElementSibling.querySelector('i').classList.add('fa-chevron-down');
+                            });
+                            content.classList.add('active');
+                            header.querySelector('i').classList.remove('fa-chevron-down');
+                            header.querySelector('i').classList.add('fa-chevron-up');
+                        }
+                    });
+                });
+            }
+
+            // Event listener for the back to catalog button
+            backToCatalogBtn.addEventListener('click', () => {
+                window.location.href = 'stock.html'; // Simply redirects to the base stock page
+            });
+        });
+    </script>
+    <!-- Link to your custom JavaScript file (for menu and theme) -->
+    <script src="js/script.js"></script>
+</body>
+</html>

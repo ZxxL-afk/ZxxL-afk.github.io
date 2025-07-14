@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Unnamed Mty</title>
+       <link rel="icon" type="image/png" href="img/logo-dark.png">
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Importar fuentes de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Enlace a Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Enlace a tu archivo CSS personalizado -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Estilos específicos para esta página si son necesarios, además de Tailwind */
+        body {
+            min-height: 100vh;
+            background-color: var(--bg-primary); /* Fondo principal del tema */
+        }
+        .form-section-card {
+            background-color: rgba(var(--bg-secondary-rgb), 0.7); /* Semi-transparent */
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border-radius: 1.5rem; /* rounded-3xl */
+            padding: 2rem;
+        }
+        .input-field-custom {
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--input-text);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .input-field-custom:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 2px rgba(var(--color-accent-rgb), 0.5);
+        }
+        /* Ajustes para el nuevo campo de URL de imagen */
+        .image-url-preview-container { /* Renombrado de image-url-preview-container */
+            width: 250px; /* Aumentado el tamaño */
+            height: 250px; /* Aumentado el tamaño */
+            background-color: #3a3a3a;
+            border: 2px dashed #5a5a5a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 0.75rem;
+            margin: 0 auto 0.5rem auto;
+            overflow: hidden;
+        }
+        .image-url-preview-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Para que la imagen se ajuste */
+        }
+        /* Adjust main dashboard container opacity */
+        .dashboard-container-wrapper {
+            background-color: rgba(var(--bg-primary-rgb), 0.7); /* Semi-transparent */
+        }
+        .loading-indicator {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--color-accent);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="theme-dark font-open-sans hero-background flex flex-col min-h-screen">
+
+    <!-- Botón de Menú (Estrella) - Fijo en la esquina superior izquierda -->
+    <button id="menu-toggle" class="fixed top-6 left-6 z-50 p-3 text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200">
+        <img id="menu-icon-img" src="img/star-icon-dark.png" alt="Menu" class="w-10 h-10">
+    </button>
+
+    <!-- Menú de Navegación Lateral -->
+    <nav id="main-menu-overlay" class="main-menu-overlay">
+        <div class="mb-12 mt-12">
+            <a href="index.html" class="block">
+                <img id="site-logo" src="img/logo-dark.png" onerror="this.onerror=null;this.src='https://placehold.co/150x50/000000/FFFFFF?text=LOGO';" alt="Unnamed Mty Logo" class="h-16 mx-auto">
+            </a>
+        </div>
+        <ul class="text-center space-y-8">
+            <li><a href="index.html" class="text-5xl font-playfair text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200 block">Inicio</a></li>
+            <li><a href="news.html" class="text-5xl font-playfair text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200 block">Noticias</a></li>
+            <li><a href="stock.html" class="text-5xl font-playfair text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200 block">Stock</a></li>
+            <li><a href="index.html#location" class="text-5xl font-playfair text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200 block">Ubicación</a></li>
+            <li>
+                <a href="admin-login.html" class="inline-block mt-8 px-4 py-2 text-base font-open-sans text-[var(--text-primary)] bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg hover:bg-[var(--color-accent)] hover:text-[var(--bg-secondary)] transition-colors duration-200">
+                    Admin Login
+                </a>
+            </li>
+            <li class="mt-12">
+                <button id="theme-toggle-overlay" class="text-[var(--text-primary)] p-3 border border-[var(--border-color)] hover:text-[var(--color-accent)] transition-colors duration-200 text-4xl rounded-full">
+                    <i class="fas fa-moon" id="theme-icon-overlay"></i>
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Contenido del Dashboard de Administrador -->
+    <main class="pt-16 pb-16 relative z-10 flex-grow">
+        <!-- Capa oscura sobre el fondo parallax para mejorar la legibilidad -->
+        <div class="absolute inset-0 bg-black opacity-60"></div>
+        <div class="container mx-auto px-4 relative z-10 dashboard-container-wrapper p-8 shadow-xl border border-[var(--border-color)] rounded-3xl">
+            <h1 class="text-4xl md:text-5xl font-playfair font-bold mb-8 text-[var(--text-primary)] text-center animate-fade-in-up">UNNAMED PANEL</h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <!-- Sección para Agregar Nuevo Producto -->
+                <div class="form-section-card animate-scale-in">
+                    <h2 class="text-3xl font-playfair font-bold mb-6 text-[var(--text-primary)] text-center">Agregar Nuevo Producto</h2>
+                    <form id="add-stock-form" class="space-y-4">
+                        <!-- Campo para URL de imagen -->
+                        <div>
+                            <label for="product-image-url" class="block text-[var(--text-primary)] text-lg font-semibold mb-2">URL de Imagen (separadas por coma):</label>
+                            <input type="text" id="product-image-url" class="input-field-custom" placeholder="Ej: https://ejemplo.com/imagen1.jpg, https://ejemplo.com/imagen2.png" required>
+                            <p class="text-center text-sm text-[var(--text-primary)] mb-4">Pega aquí los enlaces de tus imágenes (de un servicio externo como Imgur)</p>
+                            <div id="product-image-url-preview-container" class="image-url-preview-container" style="display: none;">
+                                <img id="product-image-url-preview" src="" alt="Previsualización URL" class="hidden">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="product-sku" class="block text-[var(--text-primary)] text-lg font-semibold mb-2">SKU:</label>
+                            <input type="text" id="product-sku" class="input-field-custom" placeholder="Ej: UNM-001" required>
+                        </div>
+                        <div>
+                            <label for="product-name" class="block text-[var(--text-primary)] text-lg font-semibold mb-2">Nombre:</label>
+                            <input type="text" id="product-name" class="input-field-custom" required>
+                        </div>
+                        <div>
+                            <label for="product-description" class="block text-[var(--text-primary)] text-lg font-semibold mb-2">Descripción:</label>
+                            <textarea id="product-description" rows="3" class="input-field-custom" required></textarea>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="product-brand" class="block text-[var(--text-primary)] text-lg font-semibold mb-2">Marca:</label>
+                                <input type="text" id="product-brand" class="input-field-custom" placeholder="Ej: Nike, Vintage" required>
+                            </div>
+                            <div>
+                                <label for="product-type" class="block text-[var(--text-primary)] text-lg font-semibold mb-2">Tipo de prenda:</label>
+                                <select id="product-type" class="input-field-custom" required>
+                                    <option value="">Selecciona un tipo</option>
+                                    <option value="tenis">Tenis</option>
+                                    <option value="camisas">Camisas</option>
+                                    <option value="hoodies">Hoodies</option>
+                                    <option value="accesorios">Accesorios</option>
+                                    <option value="gorras">Gorras</option>
+                                    <option value="pantalones">Pantalones</option>
+                                    <option value="chamarras">Chamarras</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="product-price" class="block text-[var(--text-primary)] text-lg font-semibold mb-2">Precio:</label>
+                                <input type="number" id="product-price" step="0.01" class="input-field-custom" required>
+                            </div>
+                        </div>
+                        <!-- Nuevo campo para Talla -->
+                        <div>
+                            <label for="product-size" class="block text-[var(--text-primary)] text-lg font-semibold mb-2">Talla:</label>
+                            <input type="text" id="product-size" class="input-field-custom" placeholder="Ej: M, L, 28, 7.5 MX" required>
+                        </div>
+                        <div>
+                            <label for="product-instagram-link" class="block text-[var(--text-primary)] text-lg font-semibold mb-2">Links de Posts (Instagram - separados por coma):</label>
+                            <textarea id="product-instagram-link" rows="3" class="input-field-custom" placeholder="LINK DEL POST 1, LINK DEL POST 2" required></textarea>
+                        </div>
+                        <button type="submit" class="bg-[var(--color-accent)] text-[var(--bg-secondary)] px-8 py-4 border border-[var(--border-color)] rounded-lg text-xl font-semibold hover:bg-[var(--text-primary)] hover:text-[var(--bg-secondary)] transition-all duration-300 transform hover:scale-105 shadow-lg w-full">
+                            Agregar Producto
+                        </button>
+                        <div id="add-stock-message" class="mt-4 text-center font-semibold"></div>
+                    </form>
+                </div>
+
+                <!-- Sección para Nueva Noticia -->
+                <div class="form-section-card animate-scale-in">
+                    <h2 class="text-3xl font-playfair font-bold mb-6 text-[var(--text-primary)] text-center">NUEVA NOTICIA</h2>
+                    <form id="add-news-form" class="space-y-4">
+                        <!-- Campo para URL de imagen de noticia -->
+                        <div>
+                            <label for="news-image-url" class="block text-[var(--text-primary)] text-lg font-semibold mb-2">URL de Imagen (separadas por coma):</label>
+                            <input type="text" id="news-image-url" class="input-field-custom" placeholder="Ej: https://ejemplo.com/noticia1.jpg, https://ejemplo.com/noticia2.png" required>
+                            <p class="text-center text-sm text-[var(--text-primary)] mb-4">Pega aquí los enlaces de tus imágenes (de un servicio externo como Imgur)</p>
+                            <div id="news-image-url-preview-container" class="image-url-preview-container" style="display: none;">
+                                <img id="news-image-url-preview" src="" alt="Previsualización URL" class="hidden">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="news-title" class="block text-[var(--text-primary)] text-lg font-semibold mb-2">TÍTULO:</label>
+                            <input type="text" id="news-title" class="input-field-custom" required>
+                        </div>
+                        <div>
+                            <label for="news-date" class="block text-[var(--text-primary)] text-lg font-semibold mb-2">FECHA:</label>
+                            <input type="date" id="news-date" class="input-field-custom" required>
+                        </div>
+                        <div>
+                            <label for="news-content" class="block text-[var(--text-primary)] text-lg font-semibold mb-2">TEXTO:</label>
+                            <textarea id="news-content" rows="6" class="input-field-custom" required></textarea>
+                        </div>
+                        <div>
+                            <label for="news-instagram-link" class="block text-[var(--text-primary)] text-lg font-semibold mb-2">Links de Posts (Instagram - separados por coma):</label>
+                            <textarea id="news-instagram-link" rows="3" class="input-field-custom" placeholder="LINK DEL POST 1, LINK DEL POST 2" required></textarea>
+                        </div>
+                        <button type="submit" class="bg-[var(--color-accent)] text-[var(--bg-secondary)] px-8 py-4 border border-[var(--border-color)] rounded-lg text-xl font-semibold hover:bg-[var(--text-primary)] hover:text-[var(--bg-secondary)] transition-all duration-300 transform hover:scale-105 shadow-lg w-full">
+                            Publicar Noticia
+                        </button>
+                        <div id="add-news-message" class="mt-4 text-center font-semibold"></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sección de Stock Actual -->
+            <div class="form-section-card mb-12">
+                <h2 class="text-3xl font-playfair font-bold mb-6 text-[var(--text-primary)] text-center">STOCK DISPONIBLE</h2>
+                <div id="current-stock-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <p class="col-span-full text-center text-[var(--text-primary)]">Cargando stock...</p>
+                </div>
+            </div>
+
+            <!-- Nueva Sección de Noticias Actuales -->
+            <div class="form-section-card">
+                <h2 class="text-3xl font-playfair font-bold mb-6 text-[var(--text-primary)] text-center">NOTICIAS DISPONIBLES</h2>
+                <div id="current-news-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <p class="col-span-full text-center text-[var(--text-primary)]">Cargando noticias...</p>
+                </div>
+            </div>
+
+            <div class="mt-12 text-center">
+                <button id="logout-button" class="bg-red-700 text-white px-8 py-4 border border-red-900 rounded-lg text-xl font-semibold hover:bg-red-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer (Pie de página) -->
+    <footer class="bg-transparent text-[var(--text-primary)] py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-base font-open-sans mb-1">Unnamed Mty</p>
+            <p class="text-sm font-open-sans mb-1">Rodrigo Gómez #335 Col Central, Monterrey Nuevo León</p>
+            <p class="text-sm font-open-sans mb-1">Horario: Lunes a Viernes: 12:30 PM - 6:30 PM</p>
+            <p class="text-xs font-open-sans mt-4">&copy; 2025 Unnamed Mty. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Ya no necesitamos importar getStorage, ref, uploadBytes, getDownloadURL, deleteObject
+
+        // Obtener la configuración de Firebase de las variables globales del entorno
+        const firebaseConfig = {
+            apiKey: "AIzaSyBowtRFcrBMgljMOL3gll1Zy0z2N1W1wxk",
+            authDomain: "unnamedweblogin.firebaseapp.com",
+            projectId: "unnamedweblogin",
+            storageBucket: "unnamedweblogin.firebasestorage.app",
+            messagingSenderId: "13792998676",
+            appId: "1:13792998676:web:2bb519a5daf9bf919fbe01",
+            measurementId: "G-2RWH689J7H"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        // Ya no inicializamos Storage: const storage = getStorage(app);
+
+        // Obtener el appId (projectId) directamente de la configuración de Firebase
+        const appId = firebaseConfig.projectId;
+
+        // Referencias a las colecciones en Firestore
+        const stockCollectionRef = collection(db, `artifacts/${appId}/public/data/stockItems`);
+        const newsCollectionRef = collection(db, `artifacts/${appId}/public/data/newsItems`); // Nueva colección para noticias
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const addStockForm = document.getElementById('add-stock-form');
+            const productSkuInput = document.getElementById('product-sku');
+            const productNameInput = document.getElementById('product-name');
+            const productDescriptionInput = document.getElementById('product-description');
+            const productBrandInput = document.getElementById('product-brand');
+            const productTypeSelect = document.getElementById('product-type');
+            const productPriceInput = document.getElementById('product-price');
+            const productSizeInput = document.getElementById('product-size'); // Nuevo input de talla
+            const productInstagramLinkInput = document.getElementById('product-instagram-link');
+            const addStockMessage = document.getElementById('add-stock-message');
+            const currentStockList = document.getElementById('current-stock-list');
+            const logoutButton = document.getElementById('logout-button');
+
+            const addNewsForm = document.getElementById('add-news-form');
+            const newsTitleInput = document.getElementById('news-title');
+            const newsDateInput = document.getElementById('news-date');
+            const newsContentInput = document.getElementById('news-content');
+            const newsInstagramLinkInput = document.getElementById('news-instagram-link');
+            const addNewsMessage = document.getElementById('add-news-message');
+            const currentNewsList = document.getElementById('current-news-list'); // Nuevo elemento para la lista de noticias
+
+            // Nuevos elementos para URLs de imagen
+            const productImageUrlInput = document.getElementById('product-image-url');
+            const productImageUrlPreview = document.getElementById('product-image-url-preview');
+            const productImageUrlPreviewContainer = document.getElementById('product-image-url-preview-container');
+
+            const newsImageUrlInput = document.getElementById('news-image-url');
+            const newsImageUrlPreview = document.getElementById('news-image-url-preview');
+            const newsImageUrlPreviewContainer = document.getElementById('news-image-url-preview-container');
+
+            let currentUserId = null;
+            let hasCheckedAuth = false;
+
+            // Función para manejar la previsualización de URLs de imagen
+            function setupImageUrlPreview(urlInput, previewImg, previewContainer) {
+                urlInput.addEventListener('input', () => {
+                    const url = urlInput.value.trim();
+                    if (url) {
+                        // Solo toma la primera URL para la previsualización si hay varias
+                        const firstUrl = url.split(',')[0].trim();
+                        previewImg.src = firstUrl;
+                        previewImg.classList.remove('hidden');
+                        previewContainer.style.display = 'flex'; // Asegura que el contenedor sea visible
+                    } else {
+                        previewImg.classList.add('hidden');
+                        previewImg.src = ''; // Limpiar la fuente de la imagen
+                        previewContainer.style.display = 'none'; // Ocultar el contenedor si no hay URL
+                    }
+                });
+
+                // Reset preview on form reset
+                urlInput.form.addEventListener('reset', () => {
+                    setTimeout(() => {
+                        previewImg.classList.add('hidden');
+                        previewImg.src = '';
+                        previewContainer.style.display = 'none';
+                    }, 50);
+                });
+            }
+
+            // Configurar la previsualización de URL para productos y noticias
+            setupImageUrlPreview(productImageUrlInput, productImageUrlPreview, productImageUrlPreviewContainer);
+            setupImageUrlPreview(newsImageUrlInput, newsImageUrlPreview, newsImageUrlPreviewContainer);
+
+            // 1. Verificar el estado de autenticación de Firebase
+            onAuthStateChanged(auth, async (user) => {
+                if (!hasCheckedAuth) {
+                    hasCheckedAuth = true;
+                    if (user) {
+                        currentUserId = user.uid;
+                        console.log("Usuario autenticado en el dashboard:", user.uid);
+                        loadStockData(); // Cargar stock una vez autenticado
+                        loadNewsData(); // Cargar noticias una vez autenticado
+                    } else {
+                        console.log("Usuario no autenticado en el dashboard. Redirigiendo al login.");
+                        window.location.href = 'admin-login.html';
+                    }
+                }
+            });
+
+            // Función para cargar y mostrar el stock en tiempo real
+            function loadStockData() {
+                const q = query(stockCollectionRef, orderBy('createdAt', 'desc'));
+
+                onSnapshot(q, (snapshot) => {
+                    console.log("Snapshot de stock recibido en dashboard:", snapshot.size, "documentos.");
+                    currentStockList.innerHTML = '';
+                    if (snapshot.empty) {
+                        currentStockList.innerHTML = '<p class="col-span-full text-center text-[var(--text-primary)]">No hay productos en stock.</p>';
+                        return;
+                    }
+
+                    snapshot.forEach((doc) => {
+                        const product = doc.data();
+                        const productId = doc.id; // Obtener el ID del documento
+                        const createdAtDate = product.createdAt ? new Date(product.createdAt.toDate()) : new Date();
+                        const formattedDate = createdAtDate.toLocaleDateString('es-MX', {
+                            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                        });
+
+                        // Generar miniaturas para múltiples imágenes (ahora desde URLs)
+                        const imageUrls = Array.isArray(product.imageUrl) ? product.imageUrl : (product.imageUrl ? [product.imageUrl] : []);
+                        console.log(`DEBUG (Admin Dashboard): Product "${product.name}" image URLs:`, imageUrls); // DEBUG: Log the image URLs for each product
+
+                        const imageUrlsHtml = (imageUrls.length > 0)
+                            ? imageUrls.map(imgUrl => `<img src="${imgUrl}" onerror="this.onerror=null;this.src='https://placehold.co/40x40/333333/E0E0E0?text=P';" alt="${product.name}" class="w-1/2 h-1/2 object-cover rounded-sm">`).join('')
+                            : `<img src="https://placehold.co/150x150/333333/E0E0E0?text=Producto" alt="Producto" class="w-full h-full object-cover">`;
+
+                        const productCard = `
+                            <div class="bg-[var(--bg-primary)] bg-opacity-80 p-4 shadow-md border border-[var(--border-color)] rounded-xl flex flex-col items-center text-center">
+                                <div class="w-32 h-32 mb-4 rounded-lg overflow-hidden flex flex-wrap justify-center items-center border border-gray-600 p-1">
+                                    ${imageUrlsHtml}
+                                </div>
+                                <h3 class="text-xl font-playfair font-semibold text-[var(--text-primary)] mb-1">${product.name}</h3>
+                                <p class="text-[var(--text-primary)] text-sm mb-1">SKU: ${product.sku || 'N/A'}</p>
+                                <p class="text-[var(--text-primary)] text-sm mb-1">Marca: ${product.brand || 'N/A'}</p>
+                                <p class="text-[var(--text-primary)] text-sm mb-1">Tipo: ${product.type || 'N/A'}</p>
+                                <p class="text-[var(--text-primary)] text-sm mb-2">Talla: ${product.size || 'N/A'}</p> <!-- Mostrar la talla -->
+                                <p class="text-[var(--text-primary)] text-sm mb-2">${product.description}</p>
+                                <p class="text-2xl font-bold text-[var(--color-accent)] mb-4">$${product.price ? product.price.toFixed(2) : '0.00'} MXN</p>
+                                <p class="text-[var(--text-primary)] text-xs">Agregado: ${formattedDate}</p>
+                                <button class="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition-colors delete-product-btn" data-id="${productId}" data-image-urls="${encodeURIComponent(JSON.stringify(imageUrls))}">
+                                    Eliminar
+                                </button>
+                            </div>
+                        `;
+                        currentStockList.innerHTML += productCard;
+                    });
+
+                    // Añadir listeners a los botones de eliminar
+                    document.querySelectorAll('.delete-product-btn').forEach(button => {
+                        button.addEventListener('click', async (e) => {
+                            const productIdToDelete = e.target.dataset.id;
+                            // En esta versión, no eliminamos de Storage, solo de Firestore
+                            // const imageUrlsToDelete = JSON.parse(decodeURIComponent(e.target.dataset.imageUrls));
+                            
+                            if (confirm('¿Estás seguro de que quieres eliminar este producto? Esta acción es irreversible.')) {
+                                try {
+                                    console.log(`Iniciando eliminación para el producto ID: ${productIdToDelete}`);
+                                    // await deleteImagesFromStorage(imageUrlsToDelete); // Deshabilitado para esta versión
+                                    await deleteDoc(doc(db, `artifacts/${appId}/public/data/stockItems`, productIdToDelete));
+                                    console.log(`Producto ${productIdToDelete} eliminado exitosamente de Firestore.`);
+                                    addStockMessage.textContent = 'Producto eliminado exitosamente.';
+                                    addStockMessage.classList.add('text-green-500');
+                                    addStockMessage.classList.remove('text-red-500');
+                                } catch (error) {
+                                    console.error("Error al eliminar producto:", error);
+                                    addStockMessage.textContent = `Error al eliminar producto: ${error.message}.`;
+                                    addStockMessage.classList.add('text-red-500');
+                                    addStockMessage.classList.remove('text-green-500');
+                                }
+                            }
+                        });
+                    });
+
+                }, (error) => {
+                    console.error("Error al obtener el stock en tiempo real:", error);
+                    addStockMessage.textContent = 'Error al cargar el stock.';
+                    addStockMessage.classList.add('text-red-500');
+                    addStockMessage.classList.remove('text-green-500');
+                    currentStockList.innerHTML = '<p class="col-span-full text-center text-red-500">Error al cargar el stock.</p>';
+                });
+            }
+
+            // Función para cargar y mostrar las noticias en tiempo real
+            function loadNewsData() {
+                const q = query(newsCollectionRef, orderBy('publishedAt', 'desc'));
+
+                onSnapshot(q, (snapshot) => {
+                    console.log("Snapshot de noticias recibido en dashboard:", snapshot.size, "documentos.");
+                    currentNewsList.innerHTML = '';
+                    if (snapshot.empty) {
+                        currentNewsList.innerHTML = '<p class="col-span-full text-center text-[var(--text-primary)]">No hay noticias publicadas.</p>';
+                        return;
+                    }
+
+                    snapshot.forEach((doc) => {
+                        const news = doc.data();
+                        const newsId = doc.id;
+                        const publishedAtDate = news.publishedAt ? new Date(news.publishedAt.toDate()) : new Date();
+                        const formattedDate = publishedAtDate.toLocaleDateString('es-MX', {
+                            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                        });
+
+                        const imageUrls = Array.isArray(news.imageUrl) ? news.imageUrl : (news.imageUrl ? [news.imageUrl] : []);
+                        const imageUrlsHtml = (imageUrls.length > 0)
+                            ? imageUrls.map(imgUrl => `<img src="${imgUrl}" onerror="this.onerror=null;this.src='https://placehold.co/40x40/666666/E0E0E0?text=N';" alt="${news.title}" class="w-1/2 h-1/2 object-cover rounded-sm">`).join('')
+                            : `<img src="https://placehold.co/150x150/666666/E0E0E0?text=Noticia" alt="Noticia" class="w-full h-full object-cover">`;
+
+                        const newsCard = `
+                            <div class="bg-[var(--bg-primary)] bg-opacity-80 p-4 shadow-md border border-[var(--border-color)] rounded-xl flex flex-col items-center text-center">
+                                <div class="w-32 h-32 mb-4 rounded-lg overflow-hidden flex flex-wrap justify-center items-center border border-gray-600 p-1">
+                                    ${imageUrlsHtml}
+                                </div>
+                                <h3 class="text-xl font-playfair font-semibold text-[var(--text-primary)] mb-1">${news.title}</h3>
+                                <p class="text-[var(--text-primary)] text-sm mb-1">${news.date}</p>
+                                <p class="text-[var(--text-primary)] text-xs">Publicado: ${formattedDate}</p>
+                                <button class="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition-colors delete-news-btn" data-id="${newsId}" data-image-urls="${encodeURIComponent(JSON.stringify(imageUrls))}">
+                                    Eliminar
+                                </button>
+                            </div>
+                        `;
+                        currentNewsList.innerHTML += newsCard;
+                    });
+
+                    // Añadir listeners a los botones de eliminar noticias
+                    document.querySelectorAll('.delete-news-btn').forEach(button => {
+                        button.addEventListener('click', async (e) => {
+                            const newsIdToDelete = e.target.dataset.id;
+                            // En esta versión, no eliminamos de Storage, solo de Firestore
+                            // const imageUrlsToDelete = JSON.parse(decodeURIComponent(e.target.dataset.imageUrls));
+
+                            if (confirm('¿Estás seguro de que quieres eliminar esta noticia? Esta acción es irreversible.')) {
+                                try {
+                                    console.log(`Iniciando eliminación para la noticia ID: ${newsIdToDelete}`);
+                                    // await deleteImagesFromStorage(imageUrlsToDelete); // Deshabilitado para esta versión
+                                    await deleteDoc(doc(db, `artifacts/${appId}/public/data/newsItems`, newsIdToDelete));
+                                    console.log(`Noticia ${newsIdToDelete} eliminada exitosamente de Firestore.`);
+                                    addNewsMessage.textContent = 'Noticia eliminada exitosamente.';
+                                    addNewsMessage.classList.add('text-green-500');
+                                    addNewsMessage.classList.remove('text-red-500');
+                                } catch (error) {
+                                    console.error("Error al eliminar noticia:", error);
+                                    addNewsMessage.textContent = `Error al eliminar noticia: ${error.message}.`;
+                                    addNewsMessage.classList.add('text-red-500');
+                                    addNewsMessage.classList.remove('text-green-500');
+                                }
+                            }
+                        });
+                    });
+
+                }, (error) => {
+                    console.error("Error al obtener las noticias en tiempo real:", error);
+                    addNewsMessage.textContent = 'Error al cargar las noticias.';
+                    addNewsMessage.classList.add('text-red-500');
+                    addNewsMessage.classList.remove('text-green-500');
+                    currentNewsList.innerHTML = '<p class="col-span-full text-center text-red-500">Error al cargar las noticias.</p>';
+                });
+            }
+
+
+            // Lógica para agregar productos
+            addStockForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                addStockMessage.textContent = ''; // Limpiar
+                addStockMessage.classList.remove('text-green-500', 'text-red-500');
+
+                if (!currentUserId) {
+                    addStockMessage.textContent = 'No estás autenticado para agregar productos.';
+                    addStockMessage.classList.add('text-red-500');
+                    return;
+                }
+
+                const productSku = productSkuInput.value.trim();
+                const productName = productNameInput.value.trim();
+                const productDescription = productDescriptionInput.value.trim();
+                const productBrand = productBrandInput.value.trim();
+                const productType = productTypeSelect.value;
+                const productPrice = parseFloat(productPriceInput.value);
+                const productSize = productSizeInput.value.trim(); // Obtener la talla
+                const productInstagramLinks = productInstagramLinkInput.value.split(',').map(link => link.trim()).filter(link => link);
+                const productImagesUrls = productImageUrlInput.value.split(',').map(url => url.trim()).filter(url => url); // Obtener URLs de imagen
+
+                if (!productSku || !productName || !productDescription || !productBrand || !productType || isNaN(productPrice) || !productSize || productInstagramLinks.length === 0 || productImagesUrls.length === 0) {
+                    addStockMessage.textContent = 'Por favor, completa todos los campos obligatorios, proporciona al menos una URL de imagen y al menos un link de Instagram.';
+                    addStockMessage.classList.add('text-red-500');
+                    return;
+                }
+
+                try {
+                    console.log("Agregando documento a Firestore con URLs de imagen...");
+                    await addDoc(stockCollectionRef, {
+                        sku: productSku,
+                        name: productName,
+                        description: productDescription,
+                        brand: productBrand,
+                        type: productType,
+                        price: productPrice,
+                        size: productSize, // Guardar la talla
+                        imageUrl: productImagesUrls, // Guardar como array de URLs
+                        instagramLink: productInstagramLinks,
+                        createdAt: serverTimestamp(),
+                        addedBy: currentUserId
+                    });
+                    addStockMessage.textContent = 'Producto agregado exitosamente.';
+                    addStockMessage.classList.add('text-green-500');
+                    addStockForm.reset();
+                    console.log("Producto agregado a Firestore y formulario reseteado.");
+                } catch (error) {
+                    console.error("Error general al agregar producto:", error);
+                    addStockMessage.textContent = `Error al agregar producto: ${error.message}.`;
+                    addStockMessage.classList.add('text-red-500');
+                }
+            });
+
+            // Lógica para agregar noticias
+            addNewsForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                addNewsMessage.textContent = ''; // Limpiar mensaje anterior
+                addNewsMessage.classList.remove('text-green-500', 'text-red-500');
+
+                if (!currentUserId) {
+                    addNewsMessage.textContent = 'No estás autenticado para agregar noticias.';
+                    addNewsMessage.classList.add('text-red-500');
+                    return;
+                }
+
+                const newsTitle = newsTitleInput.value.trim();
+                const newsDate = newsDateInput.value;
+                const newsContent = newsContentInput.value.trim();
+                const newsInstagramLinks = newsInstagramLinkInput.value.split(',').map(link => link.trim()).filter(link => link);
+                const newsImagesUrls = newsImageUrlInput.value.split(',').map(url => url.trim()).filter(url => url); // Obtener URLs de imagen
+
+                if (!newsTitle || !newsDate || !newsContent || newsInstagramLinks.length === 0 || newsImagesUrls.length === 0) {
+                    addNewsMessage.textContent = 'Por favor, completa todos los campos obligatorios para la noticia, proporciona al menos una URL de imagen y al menos un link de Instagram.';
+                    addNewsMessage.classList.add('text-red-500');
+                    return;
+                }
+
+                try {
+                    console.log("Publicando noticia en Firestore con URLs de imagen...");
+                    await addDoc(newsCollectionRef, {
+                        title: newsTitle,
+                        date: newsDate,
+                        content: newsContent,
+                        imageUrl: newsImagesUrls, // Guardar como array de URLs
+                        instagramLink: newsInstagramLinks,
+                        publishedAt: serverTimestamp(),
+                        publishedBy: currentUserId
+                    });
+                    addNewsMessage.textContent = 'Noticia publicada exitosamente.';
+                    addNewsMessage.classList.add('text-green-500');
+                    addNewsForm.reset();
+                    console.log("Noticia publicada en Firestore y formulario reseteado.");
+                } catch (error) {
+                    console.error("Error general al publicar noticia:", error);
+                    addNewsMessage.textContent = `Error al publicar noticia: ${error.message}.`;
+                    addNewsMessage.classList.add('text-red-500');
+                }
+            });
+
+            // Lógica para cerrar sesión
+            logoutButton.addEventListener('click', async () => {
+                try {
+                    await signOut(auth);
+                    window.location.href = 'admin-login.html';
+                } catch (error) {
+                    console.error("Error al cerrar sesión:", error);
+                }
+            });
+        });
+    </script>
+    <!-- Enlace a tu archivo JavaScript personalizado (para el menú y tema) -->
+    <script src="js/script.js"></script>
+</body>
+</html>
+

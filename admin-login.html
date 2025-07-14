@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Unnamed Mty</title>
+       <link rel="icon" type="image/png" href="img/logo-dark.png">
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Importar fuentes de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Enlace a Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Enlace a tu archivo CSS personalizado -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Estilos específicos para esta página si son necesarios, además de Tailwind */
+        body {
+            /* Eliminamos el centrado directo del body para que flex-col funcione */
+            /* display: flex; */
+            /* justify-content: center; */
+            /* align-items: center; */
+            min-height: 100vh;
+            background-color: var(--bg-primary); /* Fondo principal del tema */
+        }
+        .login-container {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+        }
+        .input-field {
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--input-text);
+        }
+        .input-field::placeholder {
+            color: var(--input-text);
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<!-- El body ahora es un contenedor flex-col para empujar el footer hacia abajo -->
+<body class="theme-dark font-open-sans hero-background flex flex-col min-h-screen">
+
+    <!-- Botón de Menú (Estrella) - Fijo en la esquina superior izquierda -->
+    <button id="menu-toggle" class="fixed top-6 left-6 z-50 p-3 text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200">
+        <img id="menu-icon-img" src="img/star-icon-dark.png" alt="Menu" class="w-10 h-10">
+    </button>
+
+    <!-- Menú de Navegación Lateral -->
+    <nav id="main-menu-overlay" class="main-menu-overlay">
+        <div class="mb-12 mt-12">
+            <a href="index.html" class="block">
+                <img id="site-logo" src="img/logo-dark.png" onerror="this.onerror=null;this.src='https://placehold.co/150x50/000000/FFFFFF?text=LOGO';" alt="Unnamed Mty Logo" class="h-16 mx-auto">
+            </a>
+        </div>
+        <ul class="text-center space-y-8">
+            <li><a href="index.html" class="text-5xl font-playfair text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200 block">Inicio</a></li>
+            <li><a href="news.html" class="text-5xl font-playfair text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200 block">Noticias</a></li>
+            <li><a href="stock.html" class="text-5xl font-playfair text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200 block">Stock</a></li>
+            <li><a href="index.html#location" class="text-5xl font-playfair text-[var(--text-primary)] hover:text-[var(--color-accent)] transition-colors duration-200 block">Ubicación</a></li>
+            <li>
+                <a href="admin-login.html" class="inline-block mt-8 px-4 py-2 text-base font-open-sans text-[var(--text-primary)] bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg hover:bg-[var(--color-accent)] hover:text-[var(--bg-secondary)] transition-colors duration-200">
+                    Admin Login
+                </a>
+            </li>
+            <li class="mt-12">
+                <button id="theme-toggle-overlay" class="text-[var(--text-primary)] p-3 border border-[var(--border-color)] hover:text-[var(--color-accent)] transition-colors duration-200 text-4xl rounded-full">
+                    <i class="fas fa-moon" id="theme-icon-overlay"></i>
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Contenido de la Página de Login con fondo parallax -->
+    <!-- flex-grow para que ocupe el espacio restante y empuje el footer hacia abajo -->
+    <main class="pt-16 pb-16 relative z-10 flex-grow flex items-center justify-center">
+        <!-- Capa de degradado sobre el fondo parallax para mejorar la legibilidad -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black-70 to-black-0"></div>
+        <div class="container mx-auto px-4 text-center relative z-10 bg-[var(--bg-primary)] bg-opacity-80 p-8 shadow-xl border border-[var(--border-color)] max-w-md rounded-3xl">
+            <h1 class="text-4xl md:text-5xl font-playfair font-bold mb-12 text-[var(--text-primary)] animate-fade-in-up">Acceso para Administradores</h1>
+            <div class="max-w-md mx-auto bg-[var(--bg-secondary)] bg-opacity-80 p-8 shadow-xl border border-[var(--border-color)] rounded-3xl animate-scale-in">
+                <form id="admin-login-form">
+                    <div class="mb-6 text-left">
+                        <label for="email" class="block text-[var(--text-primary)] text-lg font-semibold mb-2">Email</label>
+                        <input type="email" id="email" name="email" class="w-full p-3 border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--input-text)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]" required>
+                    </div>
+                    <div class="mb-6 text-left">
+                        <label for="password" class="block text-[var(--text-primary)] text-lg font-semibold mb-2">Contraseña</label>
+                        <input type="password" id="password" name="password" class="w-full p-3 border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--input-text)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]" required>
+                    </div>
+                    <button type="submit" class="bg-[var(--color-accent)] text-[var(--bg-secondary)] px-8 py-4 border border-[var(--border-color)] rounded-lg text-xl font-semibold hover:bg-[var(--text-primary)] hover:text-[var(--bg-secondary)] transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        Ingresar
+                    </button>
+                    <div id="login-message" class="mt-4 text-red-500 font-semibold"></div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer (Pie de página) - Transparente con texto normal -->
+    <footer class="bg-transparent text-[var(--text-primary)] py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-base font-open-sans mb-1">Unnamed Mty</p>
+            <p class="text-sm font-open-sans mb-1">Rodrigo Gómez #335 Col Central, Monterrey Nuevo León</p>
+            <p class="text-sm font-open-sans mb-1">Horario: Lunes a Viernes: 12:30 PM - 6:30 PM</p>
+            <p class="text-xs font-open-sans mt-4">&copy; 2025 Unnamed Mty. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // TU OBJETO firebaseConfig REAL COPIADO DE LA CONSOLA DE FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyBowtRFcrBMgljMOL3gll1Zy0z2N1W1wxk",
+            authDomain: "unnamedweblogin.firebaseapp.com",
+            projectId: "unnamedweblogin",
+            storageBucket: "unnamedweblogin.firebasestorage.app",
+            messagingSenderId: "13792998676",
+            appId: "1:13792998676:web:2bb519a5daf9bf919fbe01",
+            measurementId: "G-2RWH689J7H"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('admin-login-form');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const loginMessage = document.getElementById('login-message');
+
+            // Función para mostrar mensajes de error
+            function showMessage(message, isError = true) {
+                loginMessage.textContent = message;
+                if (isError) {
+                    loginMessage.classList.remove('text-green-500');
+                    loginMessage.classList.add('text-red-500');
+                } else {
+                    loginMessage.classList.remove('text-red-500');
+                    loginMessage.classList.add('text-green-500');
+                }
+            }
+
+            // Ocultar mensajes al inicio
+            showMessage('', false);
+
+            // Autenticación inicial para el entorno de Canvas (no para el login de admin)
+            // Esto asegura que el entorno de Canvas pueda interactuar con Firebase si es necesario.
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) {
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined') {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                            console.log("Autenticación con token inicial de Canvas exitosa.");
+                        }
+                    } catch (error) {
+                        console.error("Error en la autenticación inicial de Canvas:", error);
+                        // No mostrar error al usuario, es para el entorno
+                    }
+                }
+            });
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                showMessage('', false); // Limpiar mensajes previos
+
+                const email = emailInput.value;
+                const password = passwordInput.value;
+
+                try {
+                    // Intentar iniciar sesión con email y contraseña
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+
+                    // Almacenar el estado de login en localStorage (útil para la sesión)
+                    localStorage.setItem('isAdminLoggedIn', 'true');
+                    localStorage.setItem('adminUserId', user.uid); // Guardar el UID real del usuario
+
+                    showMessage('Inicio de sesión exitoso. Redirigiendo...', false);
+                    console.log("Redirigiendo a admin-dashboard.html..."); // Log para depuración
+                    window.location.href = 'admin-dashboard.html'; // Redirigir inmediatamente
+                } catch (error) {
+                    console.error("Error al iniciar sesión:", error.code, error.message);
+                    let displayMessage = "Error al iniciar sesión. Por favor, verifica tus credenciales.";
+
+                    switch (error.code) {
+                        case 'auth/invalid-email':
+                            displayMessage = "El formato del email es inválido.";
+                            break;
+                        case 'auth/user-disabled':
+                            displayMessage = "Este usuario ha sido deshabilitado.";
+                            break;
+                        case 'auth/user-not-found':
+                        case 'auth/wrong-password':
+                            displayMessage = "Email o contraseña incorrectos.";
+                            break;
+                        case 'auth/too-many-requests':
+                            displayMessage = "Demasiados intentos fallidos. Intenta de nuevo más tarde.";
+                            break;
+                        default:
+                            displayMessage = "Ocurrió un error desconocido. Intenta de nuevo.";
+                    }
+                    showMessage(displayMessage, true);
+                }
+            });
+        });
+    </script>
+    <!-- Enlace a tu archivo JavaScript personalizado (para el menú y tema) -->
+    <script src="js/script.js"></script>
+</body>
+</html>

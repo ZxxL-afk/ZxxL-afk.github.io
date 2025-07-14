@@ -1,0 +1,291 @@
+/* css/style.css */
+/* Definición de variables CSS para los temas */
+:root {
+    /* Tema Oscuro (predeterminado) */
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2a2a2a;
+    --text-primary: #cccccc; /* Grisecito para el texto */
+    --color-accent: #BBBBBB; /* Gris claro para acentos */
+    --border-color: #4a4a4a;
+    --input-bg: #3a3a3a;
+    --input-border: #5a5a5a;
+    --input-text: #e0e0e0;
+    --instagram-color: #8A2BE2; /* Moradito para Instagram */
+    --overlay-bg: rgba(0, 0, 0, 0.85); /* Negro con 85% de opacidad para el menú */
+}
+
+.theme-light {
+    /* Tema Claro */
+    --bg-primary: #f0f0f0;
+    --bg-secondary: #ffffff;
+    --text-primary: #444444; /* Gris más oscuro para el texto en modo claro */
+    --color-accent: #666666; /* Gris más oscuro para acentos en modo claro */
+    --border-color: #cccccc;
+    --input-bg: #e9e9e9;
+    --input-border: #bbbbbb;
+    --input-text: #333333;
+    --instagram-color: #8A2BE2; /* Moradito para Instagram */
+    --overlay-bg: rgba(255, 255, 255, 0.85); /* Blanco con 85% de opacidad para el menú */
+}
+
+/* Base para el cuerpo con fondo parallax */
+.hero-background {
+    background-image: url('../img/hero-bg-dark.jpg'); /* Imagen de fondo predeterminada */
+    background-attachment: fixed; /* Efecto parallax */
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    transition: background-image 0.5s ease-in-out; /* Transición suave para el cambio de imagen */
+}
+
+/* Estilos para el menú lateral */
+.main-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0; /* Inicialmente oculto */
+    max-width: 300px; /* Ancho máximo para el menú lateral */
+    background-color: var(--overlay-bg); /* Usa la variable de fondo de overlay */
+    z-index: 49; /* Menor que el botón de menú para que el botón esté "encima" */
+    overflow-x: hidden; /* Oculta el contenido que excede el ancho */
+    transition: width 0.3s ease-in-out; /* Transición para el ancho */
+    padding-top: 60px; /* Espacio para el botón de cerrar y logo */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Alinea el contenido al inicio */
+    pointer-events: none; /* No interactuable cuando está oculto */
+}
+
+.main-menu-overlay.is-active {
+    width: 100%; /* Ancho completo en móviles */
+    pointer-events: auto; /* Se vuelve interactuable */
+}
+
+@media (min-width: 768px) { /* Para pantallas más grandes, ajusta el ancho */
+    .main-menu-overlay.is-active {
+        width: 280px; /* Ancho fijo para desktop */
+    }
+}
+
+/* Estilos para el botón de menú (estrella) */
+#menu-toggle {
+    background-color: transparent !important; /* Fuerza fondo transparente */
+    border: none !important; /* Elimina el borde */
+    box-shadow: none !important; /* Elimina la sombra */
+    padding: 0.75rem !important; /* Mantén el padding para el área de clic si lo deseas, o ajusta */
+    z-index: 50; /* Asegura que la estrella esté siempre visible y encima del menú */
+}
+
+#menu-toggle img {
+    display: block; /* Asegura que la imagen se muestre correctamente */
+    width: 48px; /* Tamaño de la estrella aumentado */
+    height: 48px; /* Tamaño de la estrella aumentado */
+    transition: transform 0.3s ease-in-out; /* Transición para el giro */
+}
+
+/* Animación de giro para la estrella */
+#menu-toggle.rotate-star img {
+    transform: rotate(180deg); /* Gira 180 grados */
+}
+
+/* Estilos para el botón "Explora el Stock" */
+.btn-explore-stock {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    /* Añadir un sutil brillo inicial */
+    box-shadow: 0 0 5px rgba(var(--color-accent-rgb), 0.5), 0 0 10px rgba(var(--color-accent-rgb), 0.3);
+}
+
+.btn-explore-stock:hover {
+    transform: scale(1.05);
+    /* Aumentar el brillo al hacer hover */
+    box-shadow: 0 0 15px rgba(var(--color-accent-rgb), 0.8), 0 0 25px rgba(var(--color-accent-rgb), 0.6);
+}
+
+/* Animación de brillo para el botón */
+@keyframes glow-animation {
+    0% { box-shadow: 0 0 5px rgba(var(--color-accent-rgb), 0.5), 0 0 10px rgba(var(--color-accent-rgb), 0.3); }
+    50% { box-shadow: 0 0 15px rgba(var(--color-accent-rgb), 0.8), 0 0 25px rgba(var(--color-accent-rgb), 0.6); }
+    100% { box-shadow: 0 0 5px rgba(var(--color-accent-rgb), 0.5), 0 0 10px rgba(var(--color-accent-rgb), 0.3); }
+}
+
+.btn-explore-stock {
+    animation: glow-animation 2s infinite alternate; /* Aplica la animación */
+}
+
+
+/* Animaciones Generales */
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fade-in-up 0.6s ease-out forwards;
+}
+
+@keyframes scale-in {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-scale-in {
+    animation: scale-in 0.5s ease-out forwards;
+}
+
+@keyframes slide-in-right {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-slide-in-right {
+    animation: slide-in-right 0.6s ease-out forwards;
+}
+
+@keyframes card-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-card-fade-in {
+    animation: card-fade-in 0.7s ease-out forwards;
+    opacity: 0; /* Asegura que no sea visible antes de la animación */
+}
+
+/* Delay para animaciones en cascada */
+.animate-card-fade-in.delay-100 { animation-delay: 0.1s; }
+.animate-card-fade-in.delay-200 { animation-delay: 0.2s; }
+.animate-card-fade-in.delay-300 { animation-delay: 0.3s; }
+.animate-card-fade-in.delay-400 { animation-delay: 0.4s; }
+.animate-card-fade-in.delay-500 { animation-delay: 0.5s; }
+
+
+/* Animación para el logo flotante */
+@keyframes float-idle {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.animate-float-idle {
+    animation: float-idle 3s ease-in-out infinite;
+}
+
+/* Animación de brillo pulsante para Instagram */
+@keyframes pulse-instagram {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+.animate-pulse-instagram {
+    animation: pulse-instagram 2s ease-in-out infinite;
+}
+
+/* Animación de brillo para elementos destacados */
+@keyframes glow-pulse {
+    0% { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3)); } /* Sombra tenue */
+    50% { filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.7)); } /* Brillo más opaco */
+}
+
+.animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite alternate; /* Brillo pulsante continuo */
+}
+
+
+/* Animación de aplastado y rebote al hacer clic (sin giro) */
+@keyframes press-bounce {
+    0% { transform: translateY(0px) scaleY(1) rotateY(0deg); }
+    30% { transform: translateY(5px) scaleY(0.95) rotateY(0deg); } /* Baja y se comprime */
+    60% { transform: translateY(-2px) scaleY(1.02) rotateY(0deg); } /* Rebote ligero hacia arriba */
+    100% { transform: translateY(0px) scaleY(1) rotateY(0deg); } /* Vuelve a la posición normal */
+}
+
+.animate-press-bounce {
+    animation: press-bounce 0.3s ease-out forwards; /* Rápido, se mantiene al final del rebote */
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+/* Animación de giro 3D completo y rebote */
+@keyframes spin-and-bounce {
+    0% { transform: translateY(0px) rotateY(0deg); }
+    25% { transform: translateY(-10px) rotateY(90deg); } /* Sube y gira a 90 */
+    50% { transform: translateY(0px) rotateY(180deg); } /* Baja y gira a 180 */
+    75% { transform: translateY(-5px) rotateY(270deg); } /* Sube un poco y gira a 270 */
+    100% { transform: translateY(0px) rotateY(360deg); } /* Vuelve a posición y gira completo */
+}
+
+.animate-spin-and-bounce {
+    animation: spin-and-bounce 0.6s ease-out forwards;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+/* Estilos para todas las cajas o contenedores */
+.bg-\[var\(--bg-primary\)\]\.bg-opacity-80,
+.bg-\[var\(--bg-secondary\)\]\.bg-opacity-80,
+.product-card,
+.product-detail-container,
+.carousel-item {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* Efectos hover para elementos interactivos */
+.product-card:hover,
+.carousel-item:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* Overrides para el menú de navegación */
+.main-menu-overlay {
+    background-color: var(--overlay-bg); /* Asegura que use la variable del tema */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .carousel-item {
+        width: 150px;
+        height: 150px;
+        margin: 0 10px;
+    }
+    .carousel-item img {
+        height: 60%;
+    }
+    .carousel-item-info h4 {
+        font-size: 0.9rem;
+    }
+    .carousel-item-info p {
+        font-size: 0.75rem;
+    }
+}
